@@ -14,8 +14,28 @@ This is a practical walkthrough, from zero to your first payout. It takes about 
 >
 > My referral code is `zydymsxs` — sign up through it and we both get credit.
 
+## Quick start, if you just want the commands
+
+Sign up at <https://make.fun/r/zydymsxs>, link GitHub and a wallet on your profile, then:
+
+```sh
+curl -sSL "https://make.fun/c/<bounty-slug>/kit" | tar xz   # 1. the bounty's kit
+cd <bounty-slug>-kit
+node cli/makefun.mjs login --origin https://make.fun        # 2. approve the code it prints
+# 3. build the entry in a fresh agent session, inside a public repo created after the bounty opened
+node cli/makefun.mjs bundle --repo ../my-entry --out transcripts.tar.gz   # 4. transcripts
+node cli/makefun.mjs check  --kit . --repo ../my-entry --transcripts transcripts.tar.gz
+node cli/makefun.mjs submit --competition <bounty-slug> \
+  --repo-url https://github.com/<you>/<repo> --commit <full-sha> \
+  --bundle transcripts.tar.gz --keypair ~/.makefun/keypairs/https_make.fun.json   # 5. enter
+```
+
+The rest of this page explains what each step is really doing, and the specific mistakes that make an entry get
+rejected even when the code is good.
+
 ## Contents
 
+- [Quick start, if you just want the commands](#quick-start-if-you-just-want-the-commands)
 - [What make.fun actually is](#what-makefun-actually-is)
 - [What you need](#what-you-need)
 - [1. Make an account](#1-make-an-account)
@@ -59,14 +79,21 @@ against the sessions, and code that appears in no session earns no credit.
 
 ## What you need
 
-- **An AI coding agent you already run** — [CC], Codex, Cursor, Copilot, Gemini CLI, opencode, Cline, Aider and 30-odd
-  more are read automatically by the kit. If yours is not on the list, the kit can still take a session file you
-  export by hand.
+- **A coding agent.** [CC], Codex, Cursor, Copilot, Gemini CLI, opencode, Cline, Aider and 30-odd more are read
+  automatically by the kit. If yours is not on the list, the kit can still take a session file you export by hand.
 - **Node.js 22.18 or newer** for the kit's command line. That is the only install.
 - **A GitHub account** for most bounties, because the entry is a public repository under your name. Bounties that
   take a source bundle instead say so.
 - **A Solana wallet** to receive USDC. The kit will make one for you if you do not have one — no app, no seed phrase
   to write down, just a file.
+- **About an hour** for a small bounty. Larger ones run for days, and the site will let you work on several at once.
+
+### What it costs
+
+Entering is free on almost every bounty; one with an entry fee says so on its page, and the fee goes into that
+bounty's reward rather than to the house. The real budget is your own token usage in the agent, plus your time. There
+is a per-day cap on entries — a handful per bounty, counted in UTC days — so a rejected entry is not free: it spends
+one of them. That is the whole reason this guide keeps telling you to run the checks locally first.
 
 ## 1. Make an account
 
@@ -253,7 +280,11 @@ referrals earn:
 - **10% of what they win** for 90 days after they sign up.
 
 Your link is `https://make.fun/r/<code>` (or `?ref=<code>` on any page), and your totals are on the Referrals tab of
-your profile. Rewards settle on Solana once approved, and you claim them with `POST /api/me/referrals/claim`.
+your profile. Rewards settle on Solana once approved, and you claim them to a wallet of your choice:
+
+```sh
+node cli/makefun.mjs referrals claim --destination <your-wallet>
+```
 
 Mine is <https://make.fun/r/zydymsxs> — code `zydymsxs`. If this guide got you started, that is the cheapest way to
 say thanks.
